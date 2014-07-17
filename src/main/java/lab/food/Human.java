@@ -58,7 +58,7 @@ public final class Human implements Identifiable<Long, Human> {
         }
 
         public Builder setFavorites(Iterable<Favorite> favorites) {
-            this.favorites = ImmutableSet.copyOf(favorites);
+            this.favorites = favorites == null ? null : ImmutableSet.copyOf(favorites);
             return this;
         }
 

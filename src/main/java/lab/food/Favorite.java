@@ -5,25 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class Favorite {
     private final long mealId;
-    private final double rating;
 
     @JsonCreator
-    public Favorite(@JsonProperty("meal_id") long mealId,
-                    @JsonProperty("rating") double rating) {
+    public Favorite(@JsonProperty("meal_id") long mealId) {
         this.mealId = mealId;
-        this.rating = rating;
     }
 
-    public static Favorite of(long mealId, double rating) {
-        return new Favorite(mealId, rating);
+    public static Favorite of(long mealId) {
+        return new Favorite(mealId);
     }
 
     public long getMealId() {
         return mealId;
-    }
-
-    public double getRating() {
-        return rating;
     }
 
     @Override
