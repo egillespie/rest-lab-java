@@ -81,11 +81,8 @@ public class Humans {
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") long id) {
-        if (humanRepository.delete(id)) {
-            return Response.noContent().build();
-        } else {
-            return Response.status(Status.NOT_FOUND).build();
-        }
+        humanRepository.delete(id);
+        return Response.noContent().build();
     }
 
     @GET
