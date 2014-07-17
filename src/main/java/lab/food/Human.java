@@ -58,7 +58,7 @@ public final class Human implements Identifiable<Long, Human> {
         }
 
         public Builder setFavorites(Iterable<Favorite> favorites) {
-            this.favorites = ImmutableSet.copyOf(favorites);
+            this.favorites = favorites == null ? null : ImmutableSet.copyOf(favorites);
             return this;
         }
 
@@ -101,13 +101,13 @@ public final class Human implements Identifiable<Long, Human> {
 
         Human human = (Human) o;
 
-        if (id != human.id) return false;
+        if (id != null ? !id.equals(human.id) : human.id != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return id != null ? id.hashCode() : 0;
     }
 }

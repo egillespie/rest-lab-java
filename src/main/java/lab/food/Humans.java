@@ -1,6 +1,9 @@
 package lab.food;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
 import lab.support.PATCH;
@@ -80,5 +83,73 @@ public class Humans {
     public Response delete(@PathParam("id") long id) {
         humanRepository.delete(id);
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/{humanId}/favorites")
+    public Response getFavorites(@PathParam("humanId") long humanId) {
+        Optional<Human> human = humanRepository.find(humanId);
+        if (human.isPresent()) {
+            return Response.ok(human.get().getFavorites()).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/{humanId}/favorites/{mealId}")
+    public Response getFavorite(@PathParam("humanId") long humanId, @PathParam("mealId") long mealId) {
+        Optional<Human> human = humanRepository.find(humanId);
+        Favorite favorite = Favorite.of(mealId);
+        if (human.isPresent() && human.get().getFavorites().contains(favorite)) {
+            return Response.ok(favorite).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Note: Treats addition of favorite that already exists as successful.
+     */
+    @PUT
+    @Path("/{humanId}/favorites/{mealId}")
+    public Response addFavorite(@PathParam("humanId") long humanId, @PathParam("mealId") long mealId) {
+        Optional<Human> human = humanRepository.find(humanId);
+        if (human.isPresent()) {
+            Human currentState = human.get();
+            Iterable<Favorite> newFavorites = Iterables.concat(currentState.getFavorites(), ImmutableSet.of(Favorite.of(mealId)));
+            Human updatedState = Human.builder(currentState).setFavorites(newFavorites).build();
+            if (humanRepository.replace(updatedState)) {
+                return Response.ok(updatedState).build();
+            } else {
+                // the human was deleted in between the retrieval and update
+                return Response.status(Status.NOT_FOUND).build();
+            }
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Note: Treats deletion of a favorite that no longer exists as successful.
+     */
+    @DELETE
+    @Path("/{humanId}/favorites/{mealId}")
+    public Response deleteFavorite(@PathParam("humanId") long humanId, @PathParam("mealId") long mealId) {
+        Optional<Human> human = humanRepository.find(humanId);
+        if (human.isPresent()) {
+            Human currentState = human.get();
+            Favorite favoriteToDelete = Favorite.of(mealId);
+            Iterable<Favorite> newFavorites = Sets.difference(currentState.getFavorites(), ImmutableSet.of(favoriteToDelete));
+            Human updatedState = Human.builder(currentState).setFavorites(newFavorites).build();
+            if (humanRepository.replace(updatedState)) {
+                return Response.noContent().build();
+            } else {
+                // the human was deleted in between the retrieval and update
+                return Response.status(Status.NOT_FOUND).build();
+            }
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
     }
 }
