@@ -78,7 +78,21 @@ public class Humans {
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") long id) {
-        humanRepository.delete(id);
-        return Response.noContent().build();
+        if (humanRepository.delete(id)) {
+            return Response.noContent().build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/{humanId}/favorites")
+    public Response getFavorites(@PathParam("humanId") long humanId) {
+        Optional<Human> human = humanRepository.find(humanId);
+        if (human.isPresent()) {
+            return Response.ok(human.get().getFavorites()).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
     }
 }

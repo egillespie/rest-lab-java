@@ -91,12 +91,14 @@ public class InMemoryRepository<S, T extends Identifiable<S, T>> {
     }
 
     /**
-     * Deletes the entity with the provided key, if one exists. Succeeds if no entity exists for the provided key.
+     * Deletes the entity with the provided key, if one exists.
      *
      * @param key unique identifier for entity to delete from repository
+     * @return true if an entity was deleted; false if no entity exists matching for the provided key
      */
-    public void delete(S key) {
-        entities.remove(key);
+    public boolean delete(S key) {
+        return entities.remove(key) != null;
+
     }
 
     /**
