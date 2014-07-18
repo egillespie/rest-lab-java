@@ -1,7 +1,10 @@
 package lab.repository;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import java.util.concurrent.ConcurrentMap;
@@ -25,6 +28,10 @@ public class InMemoryRepository<S, T extends Identifiable<S, T>> {
 
     public Optional<T> find(S key) {
         return Optional.fromNullable(entities.get(key));
+    }
+
+    public ImmutableSet<T> find(Predicate<T> filter) {
+        return ImmutableSet.copyOf(Iterables.filter(entities.values(), filter));
     }
 
     public ImmutableSet<T> getAll() {

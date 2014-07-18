@@ -37,25 +37,22 @@
 package lab.food;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
 import lab.support.PATCH;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.annotation.Nullable;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.Set;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
@@ -67,10 +64,27 @@ import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 public class Meals {
     private final InMemoryRepository<Long, Meal> mealRepository = new InMemoryRepository<Long, Meal>(new LongIdGenerator(), new DefaultMealsInitializer());
 
+    private static class IngredientFilter implements Predicate<Meal> {
+        private final ImmutableSet<String> ingredientsToMatch;
+
+        private IngredientFilter(Iterable<String> ingredientsToMatch) {
+            this.ingredientsToMatch = ImmutableSet.copyOf(ingredientsToMatch);
+        }
+
+        @Override
+        public boolean apply(@Nullable Meal meal) {
+            return meal != null && !Sets.intersection(ingredientsToMatch, meal.getIngredients()).isEmpty();
+        }
+    }
+
     @GET
     @Consumes(MediaType.WILDCARD)
-    public ImmutableSet<Meal> retrieveAll() {
-        return mealRepository.getAll();
+    public ImmutableSet<Meal> retrieveAll(@QueryParam("ingredients") Set<String> ingredients) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            return mealRepository.getAll();
+        } else {
+            return mealRepository.find(new IngredientFilter(ingredients));
+        }
     }
 
     @POST
