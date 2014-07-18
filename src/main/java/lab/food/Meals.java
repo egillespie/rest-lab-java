@@ -37,6 +37,7 @@
 package lab.food;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
 import lab.support.PATCH;
@@ -64,12 +65,12 @@ import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Meals {
-    private final InMemoryRepository<Long, Meal> mealRepository = new InMemoryRepository<Long, Meal>(new LongIdGenerator());
+    private final InMemoryRepository<Long, Meal> mealRepository = new InMemoryRepository<Long, Meal>(new LongIdGenerator(), new DefaultMealsInitializer());
 
     @GET
     @Consumes(MediaType.WILDCARD)
-    public Response retrieveAll() {
-        return Response.ok(mealRepository.getAll()).build();
+    public ImmutableSet<Meal> retrieveAll() {
+        return mealRepository.getAll();
     }
 
     @POST

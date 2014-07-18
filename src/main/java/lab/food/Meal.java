@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableSet;
 import lab.repository.Identifiable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public final class Meal implements Identifiable<Long, Meal> {
     private final Long id;
     private final String name;
@@ -19,9 +17,9 @@ public final class Meal implements Identifiable<Long, Meal> {
                 @JsonProperty("description") Description description,
                 @JsonProperty("ingredients") Iterable<String> ingredients) {
         this.id = id;
-        this.name = checkNotNull(name);
-        this.description = checkNotNull(description);
-        this.ingredients = ImmutableSet.copyOf(ingredients);
+        this.name = name;
+        this.description = description;
+        this.ingredients = ingredients == null ? ImmutableSet.<String>of() : ImmutableSet.copyOf(ingredients);
     }
 
     public static Builder builder() {
@@ -124,13 +122,13 @@ public final class Meal implements Identifiable<Long, Meal> {
 
         Meal meal = (Meal) o;
 
-        if (id != meal.id) return false;
+        if (id != null ? !id.equals(meal.id) : meal.id != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return id != null ? id.hashCode() : 0;
     }
 }

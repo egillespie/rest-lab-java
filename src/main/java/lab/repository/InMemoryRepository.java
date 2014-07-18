@@ -18,8 +18,9 @@ public class InMemoryRepository<S, T extends Identifiable<S, T>> {
     private final ConcurrentMap<S, T> entities = Maps.newConcurrentMap();
     private final IdGenerator<S> idGenerator;
 
-    public InMemoryRepository(IdGenerator<S> idGenerator) {
+    public InMemoryRepository(IdGenerator<S> idGenerator, Initializer<S, T> initializer) {
         this.idGenerator = idGenerator;
+        initializer.setupData(this);
     }
 
     public Optional<T> find(S key) {
@@ -107,5 +108,15 @@ public class InMemoryRepository<S, T extends Identifiable<S, T>> {
      */
     public static interface IdGenerator<S> {
         S generateId();
+    }
+
+    /**
+     * Populates the repository with an initial set of entities.
+     *
+     * @param <S> Type of identifiers.
+     * @param <T> Type of entities.
+     */
+    public static interface Initializer<S, T extends Identifiable<S, T>> {
+        void setupData(InMemoryRepository<S, T> repository);
     }
 }

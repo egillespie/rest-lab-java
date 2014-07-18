@@ -22,7 +22,7 @@ import static javax.ws.rs.core.Response.Status;
 @Path("/humans")
 @Produces(MediaType.APPLICATION_JSON)
 public class Humans {
-    private final InMemoryRepository<Long, Human> humanRepository = new InMemoryRepository<Long, Human>(new LongIdGenerator());
+    private final InMemoryRepository<Long, Human> humanRepository = new InMemoryRepository<Long, Human>(new LongIdGenerator(), new DefaultHumansInitializer());
 
     @GET
     public Response retrieveAll() {
