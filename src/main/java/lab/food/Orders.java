@@ -63,7 +63,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class Orders {
-    private final InMemoryRepository<Long, Order> orderRepository = new InMemoryRepository<Long, Order>(new LongIdGenerator());
+    private final InMemoryRepository<Long, Order> orderRepository = new InMemoryRepository<Long, Order>(new LongIdGenerator(), new DefaultOrdersInitializer());
 
     @GET
     @Consumes(MediaType.WILDCARD)
