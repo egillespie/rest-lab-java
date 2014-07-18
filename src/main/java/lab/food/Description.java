@@ -9,14 +9,14 @@ public final class Description {
     private final String brief;
     private final String full;
 
-    @JsonCreator
-    private Description(@JsonProperty("short") String brief,
-                        @JsonProperty("full") String full) {
+    private Description(String brief, String full) {
         this.brief = checkNotNull(brief);
         this.full = checkNotNull(full);
     }
 
-    public static Description of(String brief, String full) {
+    @JsonCreator
+    public static Description of(@JsonProperty("short") String brief,
+                                 @JsonProperty("full") String full) {
         return new Description(brief, full);
     }
 

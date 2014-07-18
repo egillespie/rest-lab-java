@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class Favorite {
-    private final long mealId;
+    private final Long mealId;
 
     @JsonCreator
-    public Favorite(@JsonProperty("meal_id") long mealId) {
+    public Favorite(@JsonProperty("meal_id") Long mealId) {
         this.mealId = mealId;
     }
 
-    public static Favorite of(long mealId) {
+    public static Favorite of(Long mealId) {
         return new Favorite(mealId);
     }
 
-    public long getMealId() {
+    public Long getMealId() {
         return mealId;
     }
 
