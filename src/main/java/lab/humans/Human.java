@@ -1,8 +1,9 @@
-package lab.food;
+package lab.humans;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableSet;
+import lab.humans.favorites.Favorite;
 import lab.repository.Identifiable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

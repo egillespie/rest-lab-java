@@ -1,4 +1,4 @@
-package lab.food;
+package lab.orders;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
