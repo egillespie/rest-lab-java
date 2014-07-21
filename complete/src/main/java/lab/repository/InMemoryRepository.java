@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -49,6 +50,18 @@ public class InMemoryRepository<S, T extends Identifiable<S, T> & Comparable<T>>
      */
     public ImmutableList<T> find(Predicate<T> filter, Ordering<T> order) {
         return order.immutableSortedCopy(Iterables.filter(entities.values(), filter));
+    }
+
+    /**
+     * Find entities that match the provided filter with results ordered by the provided ordering.
+     *
+     * @param filter predicate entities must match
+     * @param order order desired for results
+     * @return matching entities sorted by provided ordering
+     */
+    public ImmutableList<T> find(Predicate<T> filter, Ordering<T> order, int offset, int maxEntitiesToReturn) {
+        ImmutableList<T> filteredSortedList = order.immutableSortedCopy(Iterables.filter(entities.values(), filter));
+        return filteredSortedList.subList(offset, Ints.min(offset + maxEntitiesToReturn, filteredSortedList.size()));
     }
 
     /**

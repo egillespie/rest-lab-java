@@ -90,8 +90,13 @@ public class Meals {
 
     @GET
     @Consumes(MediaType.WILDCARD)
-    public ImmutableList<Meal> retrieveAll(@QueryParam("ingredients") Set<String> ingredients, @QueryParam("sort") String sort) {
-        return mealRepository.find(determineFilter(ingredients), determineSortOrder(sort));
+    public ImmutableList<Meal> retrieveAll(@QueryParam("ingredients") Set<String> ingredients, @QueryParam("sort") String sort,
+                                           @QueryParam("offset") Integer offset, @QueryParam("max") Integer max) {
+        if (offset != null && max != null) {
+            return mealRepository.find(determineFilter(ingredients), determineSortOrder(sort), offset, max);
+        } else {
+            return mealRepository.find(determineFilter(ingredients), determineSortOrder(sort));
+        }
     }
 
     private Predicate<Meal> determineFilter(Set<String> ingredients) {
