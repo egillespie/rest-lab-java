@@ -1,4 +1,4 @@
-package lab.food;
+package lab.meals;
 
 import com.google.common.collect.ImmutableSet;
 import lab.repository.InMemoryRepository;

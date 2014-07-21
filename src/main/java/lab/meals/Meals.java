@@ -34,22 +34,16 @@
 *     All patent, copyright, trademark and other intellectual property rights
 *     included in the source code are owned exclusively by Vertafore, Inc.
 */
-package lab.food;
+package lab.meals;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
 import lab.support.PATCH;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -57,35 +51,36 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 
 @Controller
-@Path("/orders")
+@Path("/meals")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class Orders {
-    private final InMemoryRepository<Long, Order> orderRepository = new InMemoryRepository<Long, Order>(new LongIdGenerator(), new DefaultOrdersInitializer());
+public class Meals {
+    private final InMemoryRepository<Long, Meal> mealRepository = new InMemoryRepository<Long, Meal>(new LongIdGenerator(), new DefaultMealsInitializer());
 
     @GET
     @Consumes(MediaType.WILDCARD)
-    public Response retrieveAll() {
-        return Response.ok(orderRepository.getAll()).build();
+    public ImmutableSet<Meal> retrieveAll() {
+        return mealRepository.getAll();
     }
 
     @POST
-    public Response create(@Context UriInfo uriInfo, Order.Builder orderBuilder) {
-        orderBuilder.setId(null);
-        Order order = orderRepository.add(orderBuilder.build());
-        URI location = uriInfo.getAbsolutePathBuilder().path("{id}").build(order.getId());
-        return Response.created(location).entity(order).build();
+    public Response create(@Context UriInfo uriInfo, Meal.Builder mealBuilder) {
+        mealBuilder.setId(null);
+        Meal meal = mealRepository.add(mealBuilder.build());
+        URI location = uriInfo.getAbsolutePathBuilder().path("{id}").build(meal.getId());
+        return Response.created(location).entity(meal).build();
     }
 
     @GET
     @Path("/{id}")
     @Consumes(MediaType.WILDCARD)
     public Response retrieve(@PathParam("id") long id) {
-        Optional<Order> orderResult = orderRepository.find(id);
-        if (orderResult.isPresent()) {
-            return Response.ok(orderResult.get()).build();
+        Optional<Meal> mealResult = mealRepository.find(id);
+        if (mealResult.isPresent()) {
+            return Response.ok(mealResult.get()).build();
         } else {
             return Response.status(NOT_FOUND).build();
         }
@@ -93,9 +88,9 @@ public class Orders {
 
     @PUT
     @Path("/{id}")
-    public Response createOrReplace(@PathParam("id") long id, Order.Builder orderBuilder) {
-        if (id == orderBuilder.getId()) {
-            return Response.ok(orderRepository.addOrReplace(orderBuilder.build())).build();
+    public Response createOrReplace(@PathParam("id") long id, Meal.Builder mealBuilder) {
+        if (id == mealBuilder.getId()) {
+            return Response.ok(mealRepository.addOrReplace(mealBuilder.build())).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -103,29 +98,46 @@ public class Orders {
 
     @PATCH
     @Path("/{id}")
-    public Response update(@PathParam("id") long id, Order.Builder updates) {
+    public Response update(@PathParam("id") long id, Meal.Builder updates) {
         if (updates.getId() != null && id != updates.getId()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        Optional<Order> currentState = orderRepository.find(id);
+        Optional<Meal> currentState = mealRepository.find(id);
         if (!currentState.isPresent()) {
             return Response.status(NOT_FOUND).build();
         }
-        Order updatedState = Order.builder(currentState.get()).merge(updates).build();
-        if (orderRepository.replace(updatedState)) {
+        Meal updatedState = Meal.builder(currentState.get()).merge(updates).build();
+        if (mealRepository.replace(updatedState)) {
             return Response.ok(updatedState).build();
         } else {
-            // the order was deleted in between the retrieval and update
+            // the meal was deleted in between the retrieval and update
             return Response.status(NOT_FOUND).build();
         }
     }
 
+    /**
+     * @return possible responses:
+     * <ul>
+     *     <li>204 - Entity was successfully deleted</li>
+     *     <li>404 - Entity was not found</li>
+     * </ul>
+     */
     @DELETE
     @Path("/{id}")
     @Consumes(MediaType.WILDCARD)
     public Response delete(@PathParam("id") long id) {
-        return orderRepository.delete(id)
+        return mealRepository.delete(id)
                 ? Response.noContent().build()
                 : Response.status(NOT_FOUND).build();
+    }
+
+    /**
+     * @return 503 - Resource is not yet implemented
+     */
+    @GET
+    @Path("/{mealId}/ingredients")
+    @Consumes(MediaType.WILDCARD)
+    public Response getMealIngredients(@PathParam("mealId") long id) {
+        return Response.status(NOT_IMPLEMENTED).build();
     }
 }

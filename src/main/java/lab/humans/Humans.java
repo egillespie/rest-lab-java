@@ -1,9 +1,10 @@
-package lab.food;
+package lab.humans;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import lab.humans.favorites.Favorite;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
 import lab.support.PATCH;

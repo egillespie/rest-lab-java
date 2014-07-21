@@ -1,4 +1,4 @@
-package lab.food;
+package lab.orders;
 
 import lab.repository.InMemoryRepository;
 
