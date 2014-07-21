@@ -15,7 +15,7 @@ If you want to build and run this project just follow these steps:
 1. Clone this project from [GitHub](https://github.com/egillespie/rest-lab-java.git).
 2. Build the project using Maven: `mvn package`
 3. Launch the project in Jetty using Maven: `mvn jetty:run-war`
-4. Navigate to [http://localhost:8080/greetings]. If you see an empty JSON list then it works!
+4. Navigate to [http://localhost:8080/greetings](http://localhost:8080/greetings). If you see an empty JSON list then it works!
 
 ## Testing
 
@@ -30,3 +30,9 @@ then you'll have to get Postman and import the collection:
 You will see a number of resources appear in the left panel. With your Jetty server running
 you can click through any of them and send them to your server to see what kinds of responses
 you get.
+
+## Lab Links
+
+* RESTish API Lab Resource Documentation: [API Docs](https://docs.google.com/document/d/1IBja69PpfL1LnK4mdrs9TSYAbEKrEcAQEnEJToQpiQY/edit?usp=sharing)
+* RESTish API Lab Slides: [Lab Slides](https://docs.google.com/presentation/d/1aHXwmcNsGJ1WWp0Z-x5Y3Ny8phtteolrSMwe6gHHvNs/edit?usp=sharing)
+* RESTish API Lab Technical Guide: [Tech Guide](https://docs.google.com/document/d/1aD81njIQ0ZcRgeA2GOxtvt9bJD3P2-lWOXNdiWRPlBw/edit#)
