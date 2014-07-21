@@ -1,8 +1,12 @@
 package lab.repository;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
  * @param <S> Type of key value uniquely identifying entities.
  * @param <T> Type of entities stored in repository.
  */
-public class InMemoryRepository<S, T extends Identifiable<S, T>> {
+public class InMemoryRepository<S, T extends Identifiable<S, T> & Comparable<T>> {
     private final ConcurrentMap<S, T> entities = Maps.newConcurrentMap();
     private final IdGenerator<S> idGenerator;
 
@@ -27,8 +31,46 @@ public class InMemoryRepository<S, T extends Identifiable<S, T>> {
         return Optional.fromNullable(entities.get(key));
     }
 
-    public ImmutableSet<T> getAll() {
-        return ImmutableSet.copyOf(entities.values());
+    /**
+     * Find entities matching the provided predicate.
+     *
+     * @param filter predicate entities must match
+     * @return entities matching filter, sorted by natural ordering
+     */
+    public ImmutableList<T> find(Predicate<T> filter) {
+        return Ordering.natural().immutableSortedCopy(Iterables.filter(entities.values(), filter));
+    }
+
+    /**
+     * Find entities that match the provided filter with results ordered by the provided ordering.
+     *
+     * @param filter predicate entities must match
+     * @param order order desired for results
+     * @return matching entities sorted by provided ordering
+     */
+    public ImmutableList<T> find(Predicate<T> filter, Ordering<T> order) {
+        return order.immutableSortedCopy(Iterables.filter(entities.values(), filter));
+    }
+
+    /**
+     * Find entities that match the provided filter with results ordered by the provided ordering.
+     *
+     * @param filter predicate entities must match
+     * @param order order desired for results
+     * @return matching entities sorted by provided ordering
+     */
+    public ImmutableList<T> find(Predicate<T> filter, Ordering<T> order, int offset, int maxEntitiesToReturn) {
+        ImmutableList<T> filteredSortedList = order.immutableSortedCopy(Iterables.filter(entities.values(), filter));
+        return filteredSortedList.subList(offset, Ints.min(offset + maxEntitiesToReturn, filteredSortedList.size()));
+    }
+
+    /**
+     * Get all entities, ordered by natural ordering.
+     *
+     * @return All entities.
+     */
+    public ImmutableList<T> getAll() {
+        return Ordering.natural().immutableSortedCopy(entities.values());
     }
 
     /**
