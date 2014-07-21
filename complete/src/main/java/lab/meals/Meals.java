@@ -38,7 +38,10 @@ package lab.meals;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import lab.repository.InMemoryRepository;
 import lab.repository.LongIdGenerator;
@@ -46,7 +49,15 @@ import lab.support.PATCH;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Nullable;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -79,12 +90,33 @@ public class Meals {
 
     @GET
     @Consumes(MediaType.WILDCARD)
-    public ImmutableSet<Meal> retrieveAll(@QueryParam("ingredients") Set<String> ingredients) {
-        if (ingredients == null || ingredients.isEmpty()) {
-            return mealRepository.getAll();
-        } else {
-            return mealRepository.find(new IngredientFilter(ingredients));
+    public ImmutableList<Meal> retrieveAll(@QueryParam("ingredients") Set<String> ingredients, @QueryParam("sort") String sort) {
+        return mealRepository.find(determineFilter(ingredients), determineSortOrder(sort));
+    }
+
+    private Predicate<Meal> determineFilter(Set<String> ingredients) {
+        Predicate<Meal> filter = Predicates.alwaysTrue();
+        if (ingredients != null && !ingredients.isEmpty()) {
+            filter = new IngredientFilter(ingredients);
         }
+        return filter;
+    }
+
+    private Ordering<Meal> determineSortOrder(String sort) {
+        Ordering<Meal> sortOrder = Ordering.natural();
+        if (sort != null) {
+            if (sort.startsWith("-")) {
+                String fieldName = sort.substring(1);
+                if (fieldName.equalsIgnoreCase("id")) {
+                    sortOrder = Ordering.natural().reverse();
+                } else if (fieldName.equalsIgnoreCase("name")) {
+                    sortOrder = Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(Meal.NAME_EXTRACTOR).reverse();
+                }
+            } else if (sort.equalsIgnoreCase("name")) {
+                sortOrder = Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(Meal.NAME_EXTRACTOR);
+            }
+        }
+        return sortOrder;
     }
 
     @POST
