@@ -1,5 +1,6 @@
 package lab.orders;
 
+import com.google.common.collect.Ordering;
 import lab.repository.Identifiable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -100,5 +101,10 @@ public final class Order implements Identifiable<Long, Order> {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public int compareTo(Order o) {
+        return Ordering.natural().nullsFirst().compare(this.id, o.id);
     }
 }

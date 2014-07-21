@@ -1,9 +1,21 @@
 package lab.meals;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 import lab.repository.Identifiable;
 
+import javax.annotation.Nullable;
+
 public final class Meal implements Identifiable<Long, Meal> {
+    public static final Function<Meal, String> NAME_EXTRACTOR = new Function<Meal, String>() {
+        @Nullable
+        @Override
+        public String apply(@Nullable Meal meal) {
+            return meal.getName();
+        }
+    };
+
     private final Long id;
     private final String name;
     private final Description description;
@@ -126,5 +138,10 @@ public final class Meal implements Identifiable<Long, Meal> {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Meal o) {
+        return Ordering.natural().nullsFirst().compare(this.id, o.id);
     }
 }

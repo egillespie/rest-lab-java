@@ -1,6 +1,7 @@
 package lab.humans;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 import lab.humans.favorites.Favorite;
 import lab.repository.Identifiable;
 
@@ -107,5 +108,10 @@ public final class Human implements Identifiable<Long, Human> {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Human o) {
+        return Ordering.natural().nullsFirst().compare(this.id, o.id);
     }
 }

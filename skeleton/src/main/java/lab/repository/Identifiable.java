@@ -6,7 +6,7 @@ package lab.repository;
  * @param <S> The type of the identifying value.
  * @param <T> The class whose instances are being identified.
  */
-public interface Identifiable<S, T> {
+public interface Identifiable<S, T> extends Comparable<T> {
     S getId();
     T withId(S id);
 }
