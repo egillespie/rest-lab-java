@@ -28,6 +28,6 @@
     </listener>
 
     <listener>
-        <listener-class>lab.support.SpringRestEasyContextLoaderListener</listener-class>
+        <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
     </listener>
 </web-app>

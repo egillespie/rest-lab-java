@@ -13,7 +13,7 @@
         <maven.war.webxml>${basedir}/src/main/webapp/WEB-INF/web.xml</maven.war.webxml>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>4.0.5.RELEASE</spring.version>
-        <resteasy.version>3.0.8.Final</resteasy.version>
+        <resteasy.version>3.0.9.Final</resteasy.version>
         <jackson.version>2.4.1</jackson.version>
     </properties>
 
